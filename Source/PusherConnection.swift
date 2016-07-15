@@ -545,10 +545,16 @@ public class PusherConnection {
         - returns: NSURLRequest object to be used by the function making the auth request
     */
     private func requestForAuthEndpoint(endpoint: String, socketID: String, channel: PusherChannel) -> NSURLRequest {
+        let params = [ "channel_name": channel.name, "socket_id": socketID ]
+        
         let request = NSMutableURLRequest(URL: NSURL(string: endpoint)!)
         request.HTTPMethod = "POST"
-        request.HTTPBody = "socket_id=\(socketID)&channel_name=\(channel.name)".dataUsingEncoding(NSUTF8StringEncoding)
-
+        do {
+            request.HTTPBody = try NSJSONSerialization.dataWithJSONObject(params, options: .PrettyPrinted)
+        } catch _ {
+            print("JSON serialization failed")
+        }
+        
         return request
     }
 
